@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Votação Legislativa</title>
+    <title>Legislator Voting System</title>
     <style>
         * {
             margin: 0;
@@ -176,16 +176,16 @@
 </head>
 <body>
     <div class="container">
-        <h1>🏛️ Sistema de Votação Legislativa</h1>
+        <h1>🏛️ Legislator Voting System</h1>
         
         <div class="search-section">
             <div class="search-group">
-                <label>Buscar Legislador</label>
+                <label>Search for Legislator</label>
                 <form method="GET" class="search-form">
                     <input type="text" name="legislator_search" 
-                           placeholder="Digite o nome ou ID do legislador" 
+                           placeholder="Tap name or ID of legislator"
                            value="{{ request.GET.legislator_search }}">
-                    <button type="submit">Buscar</button>
+                    <button type="submit">Search</button>
                 </form>
                 <p class="help-text">Ex: "John Doe" ou "123"</p>
             </div>
@@ -193,12 +193,12 @@
             <div class="divider"></div>
             
             <div class="search-group">
-                <label>Buscar Projeto de Lei</label>
+                <label>Search for Bill</label>
                 <form method="GET" class="search-form">
                     <input type="text" name="bill_search" 
-                           placeholder="Digite o título ou ID do projeto" 
+                           placeholder="Tap title or ID of bill" 
                            value="{{ request.GET.bill_search }}">
-                    <button type="submit">Buscar</button>
+                    <button type="submit">Search</button>
                 </form>
                 <p class="help-text">Ex: "Health Care Act" ou "456"</p>
             </div>
@@ -206,24 +206,24 @@
         
         {% if error %}
         <div class="error">
-            <strong>⚠️ Erro:</strong> {{ error }}
+            <strong>⚠️ Error:</strong> {{ error }}
         </div>
         {% endif %}
         
         {% if legislator_data %}
         <div class="result-card">
-            <h2>📊 Resultado - Legislador</h2>
+            <h2>📊 Result - Legislator</h2>
             <h3>{{ legislator_data.legislator.name }}</h3>
             <p class="info-text"><strong>ID:</strong> {{ legislator_data.legislator.id }}</p>
             
             <div class="stats">
                 <div class="stat-box">
                     <div class="stat-number stat-for">{{ legislator_data.votes_for }}</div>
-                    <div class="stat-label">Votos a Favor</div>
+                    <div class="stat-label">Votes For</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-number stat-against">{{ legislator_data.votes_against }}</div>
-                    <div class="stat-label">Votos Contra</div>
+                    <div class="stat-label">Votes Against</div>
                 </div>
             </div>
         </div>
@@ -231,19 +231,19 @@
         
         {% if bill_data %}
         <div class="result-card">
-            <h2>📊 Resultado - Projeto de Lei</h2>
+            <h2>📊 Result - Bill</h2>
             <h3>{{ bill_data.bill.title }}</h3>
             <p class="info-text"><strong>ID:</strong> {{ bill_data.bill.id }}</p>
-            <p class="info-text"><strong>Patrocinador Principal:</strong> {{ bill_data.sponsor_name }}</p>
+            <p class="info-text"><strong>Principal Sponsor:</strong> {{ bill_data.sponsor_name }}</p>
             
             <div class="stats">
                 <div class="stat-box">
                     <div class="stat-number stat-for">{{ bill_data.supporters }}</div>
-                    <div class="stat-label">Apoiadores</div>
+                    <div class="stat-label">Votes For</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-number stat-against">{{ bill_data.opponents }}</div>
-                    <div class="stat-label">Opositores</div>
+                    <div class="stat-label">Votes Against</div>
                 </div>
             </div>
         </div>

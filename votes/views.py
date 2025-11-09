@@ -9,10 +9,10 @@ def home(request):
         'search_type': None
     }
     
-    # Busca por Legislador
+    # Search for Legislator
     legislator_search = request.GET.get('legislator_search', '').strip()
     if legislator_search:
-        # Tenta buscar por ID ou nome
+        # Try to search by ID or name
         try:
             legislator_id = int(legislator_search)
             legislator = Legislator.objects.filter(id=legislator_id).first()
@@ -20,7 +20,7 @@ def home(request):
             legislator = Legislator.objects.filter(name__icontains=legislator_search).first()
         
         if legislator:
-            # Conta votos a favor (vote_type = 1) e contra (vote_type = 2)
+            # Count votes in favor (vote_type = 1) and against (vote_type = 2)
             votes_for = VoteResult.objects.filter(
                 legislator=legislator, 
                 vote_type=1
@@ -38,12 +38,12 @@ def home(request):
             }
             context['search_type'] = 'legislator'
         else:
-            context['error'] = 'Legislador não encontrado'
+            context['error'] = 'Legislator not found'
     
-    # Busca por Bill
+    # Search for Bill
     bill_search = request.GET.get('bill_search', '').strip()
     if bill_search:
-        # Tenta buscar por ID ou título
+        # Try to search by ID or title
         try:
             bill_id = int(bill_search)
             bill = Bill.objects.filter(id=bill_id).first()
@@ -51,11 +51,11 @@ def home(request):
             bill = Bill.objects.filter(title__icontains=bill_search).first()
         
         if bill:
-            # Busca todos os votos relacionados a este bill
+            # Search for all votes related to this bill
             from .models import Vote
             votes = Vote.objects.filter(bill=bill)
             
-            # Conta apoiadores e opositores
+            # Count supporters and opponents
             supporters = VoteResult.objects.filter(
                 vote__in=votes,
                 vote_type=1
@@ -66,9 +66,9 @@ def home(request):
                 vote_type=2
             ).count()
             
-            # Busca o nome do sponsor
+            # Get the sponsor's name
             sponsor = Legislator.objects.filter(id=bill.sponsor_id).first()
-            sponsor_name = sponsor.name if sponsor else "Desconhecido"
+            sponsor_name = sponsor.name if sponsor else "Unknown"
             
             context['bill_data'] = {
                 'bill': bill,
@@ -78,6 +78,6 @@ def home(request):
             }
             context['search_type'] = 'bill'
         else:
-            context['error'] = 'Projeto de lei não encontrado'
+            context['error'] = 'Bill not found'
     
     return render(request, 'votes/home.html', context)
