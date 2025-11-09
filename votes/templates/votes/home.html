@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Votação Legislativa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2em;
+        }
+        
+        .search-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .search-group {
+            margin-bottom: 20px;
+        }
+        
+        .search-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 10px;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #5568d3;
+        }
+        
+        .result-card {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .result-card h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        .result-card h3 {
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-for {
+            color: #28a745;
+        }
+        
+        .stat-against {
+            color: #dc3545;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .info-text {
+            color: #666;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+            margin-top: 20px;
+        }
+        
+        .divider {
+            height: 1px;
+            background: #ddd;
+            margin: 20px 0;
+        }
+        
+        .help-text {
+            color: #888;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏛️ Sistema de Votação Legislativa</h1>
+        
+        <div class="search-section">
+            <div class="search-group">
+                <label>Buscar Legislador</label>
+                <form method="GET" class="search-form">
+                    <input type="text" name="legislator_search" 
+                           placeholder="Digite o nome ou ID do legislador" 
+                           value="{{ request.GET.legislator_search }}">
+                    <button type="submit">Buscar</button>
+                </form>
+                <p class="help-text">Ex: "John Doe" ou "123"</p>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="search-group">
+                <label>Buscar Projeto de Lei</label>
+                <form method="GET" class="search-form">
+                    <input type="text" name="bill_search" 
+                           placeholder="Digite o título ou ID do projeto" 
+                           value="{{ request.GET.bill_search }}">
+                    <button type="submit">Buscar</button>
+                </form>
+                <p class="help-text">Ex: "Health Care Act" ou "456"</p>
+            </div>
+        </div>
+        
+        {% if error %}
+        <div class="error">
+            <strong>⚠️ Erro:</strong> {{ error }}
+        </div>
+        {% endif %}
+        
+        {% if legislator_data %}
+        <div class="result-card">
+            <h2>📊 Resultado - Legislador</h2>
+            <h3>{{ legislator_data.legislator.name }}</h3>
+            <p class="info-text"><strong>ID:</strong> {{ legislator_data.legislator.id }}</p>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-number stat-for">{{ legislator_data.votes_for }}</div>
+                    <div class="stat-label">Votos a Favor</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number stat-against">{{ legislator_data.votes_against }}</div>
+                    <div class="stat-label">Votos Contra</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if bill_data %}
+        <div class="result-card">
+            <h2>📊 Resultado - Projeto de Lei</h2>
+            <h3>{{ bill_data.bill.title }}</h3>
+            <p class="info-text"><strong>ID:</strong> {{ bill_data.bill.id }}</p>
+            <p class="info-text"><strong>Patrocinador Principal:</strong> {{ bill_data.sponsor_name }}</p>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-number stat-for">{{ bill_data.supporters }}</div>
+                    <div class="stat-label">Apoiadores</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number stat-against">{{ bill_data.opponents }}</div>
+                    <div class="stat-label">Opositores</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

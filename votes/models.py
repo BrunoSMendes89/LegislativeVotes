@@ -1,7 +1,7 @@
 from django.db import models
 
 class Legislator(models.Model):
-    legislator_id = models.IntegerField(unique=True)
+    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=200)
     
     def __str__(self):
@@ -12,9 +12,9 @@ class Legislator(models.Model):
 
 
 class Bill(models.Model):
-    bill_id = models.IntegerField(unique=True)
+    id = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=500)
-    primary_sponsor = models.CharField(max_length=200)
+    sponsor_id = models.IntegerField()
     
     def __str__(self):
         return self.title
@@ -24,24 +24,24 @@ class Bill(models.Model):
 
 
 class Vote(models.Model):
-    vote_id = models.IntegerField(unique=True)
-    bill = models.ForeignKey(Bill, on_delete=models.CASCADE, to_field='bill_id')
+    id = models.IntegerField(primary_key=True)
+    bill = models.ForeignKey(Bill, on_delete=models.CASCADE)
     
     def __str__(self):
-        return f"Vote {self.vote_id} on {self.bill.title}"
+        return f"Vote {self.id} on {self.bill.title}"
     
     class Meta:
         db_table = 'votes'
 
 
 class VoteResult(models.Model):
-    result_id = models.IntegerField(unique=True)
-    legislator = models.ForeignKey(Legislator, on_delete=models.CASCADE, to_field='legislator_id')
-    vote = models.ForeignKey(Vote, on_delete=models.CASCADE, to_field='vote_id')
+    id = models.IntegerField(primary_key=True)
+    legislator = models.ForeignKey(Legislator, on_delete=models.CASCADE)
+    vote = models.ForeignKey(Vote, on_delete=models.CASCADE)
     vote_type = models.IntegerField()  # 1 = A favor, 2 = Contra
     
     def __str__(self):
-        return f"{self.legislator.name} voted {self.vote_type} on vote {self.vote_id}"
+        return f"{self.legislator.name} voted {self.vote_type} on vote {self.id}"
     
     class Meta:
         db_table = 'vote_results'
